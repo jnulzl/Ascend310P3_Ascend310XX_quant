@@ -1,0 +1,28 @@
+{	
+	"det_pre_params":
+	{
+		"img_root":"QUANT_IMAGES_ROOT_DIR",
+		"fixed_scale":1, 
+		"batch_size":12, 
+		"des_channels":3, 
+		"des_height":640, 
+		"des_width":640, 
+		"is_BGR2RGB":1, 
+		"means":[0, 0, 0], 
+		"stds":[255, 255, 255]
+	},
+
+	"onnx_path":"ONNX_MODEL_PATH",
+	"input_shape":"\"INPUT_NAME:12,3,640,640\"",
+	"soc_version":"Ascend310P3",
+	"insert_op_conf":"./model_aipp.cfg",
+
+	"quant_int8":
+	{
+		"cali_batch_size":16
+	},
+	"quant_fp16":
+	{
+
+	}	
+}
