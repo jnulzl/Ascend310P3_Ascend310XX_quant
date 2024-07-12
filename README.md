@@ -25,25 +25,26 @@
 - 1. 量化数据准备
 
 ```shell
-python3 scripts/preprocess_data.py models/yolov6_pre_params.json
+python3 scripts/preprocess_data.py models/yolov6_params.json
 ```
 
 其中`yolov6_pre_params.json`的内容如下：
 
 ```shell
 {	
-	"det_pre_params":
-	{
-		"img_root":"./imgs",
-		"fixed_scale":1, 
-		"batch_size":1, 
-		"des_channels":3, 
-		"des_height":640, 
-		"des_width":640, 
-		"is_BGR2RGB":1, 
-		"means":[0, 0, 0], 
-		"stds":[255, 255, 255]
-	},
+    "detPreParams":
+    {
+        "imgRoot":"./imgs",
+        "calibrationDataRoot":"./calibration_data",
+        "isFixResize":1, 
+        "batchSize":12, 
+        "netInputChannels":3, 
+        "netInputHeight":640, 
+        "netInputWidth":640, 
+        "isBGR2RGB":1, 
+        "means":[0, 0, 0], 
+        "scales":[0.00392157, 0.00392157, 0.00392157]
+    },
 
 	# 以下内容对于生成量化数据这一步没用，故此省略
 	......
@@ -141,11 +142,11 @@ amct_onnx calibration --model models/yolov6n.onnx --input_shape "images:12,3,640
 - 转换量化后的模型
 
 ```shell
-atc --model=./output_Ascend310P3/yolov6n_int8_deploy_model.onnx --framework=5 --output=./output_Ascend310P3/yolov6n_int8_deploy_model_inc_pre_int8 --input_shape="images:1,3,640,640" --soc_version=Ascend310P3 --output_type=FP32 --insert_op_conf=./models/model_aipp.cfg
+atc --model=./quant_test/output_Ascend310P3/yolov6n_int8_deploy_model.onnx --framework=5 --output=./quant_test/output_Ascend310P3/yolov6n_int8_deploy_model_inc_pre --input_shape="images:1,3,640,640" --soc_version=Ascend310P3 --output_type=FP32 --insert_op_conf=./models/model_aipp.cfg
 ```
 
 - 直接转换原始FP32 ONNX模型(不量化)
 
 ```shell
-atc --model=./models/yolov6n.onnx --framework=5 --output=./output_Ascend310P3/yolov6n_int8_deploy_model_inc_pre_fp16 --input_shape="images:1,3,640,640" --soc_version=Ascend310P3 --output_type=FP32 --insert_op_conf=./models/model_aipp.cfg
+atc --model=./models/yolov6n.onnx --framework=5 --output=./quant_test/output_Ascend310P3/yolov6n_fp16_deploy_model_inc_pre_ --input_shape="images:1,3,640,640" --soc_version=Ascend310P3 --output_type=FP32 --insert_op_conf=./models/model_aipp.cfg
 ```

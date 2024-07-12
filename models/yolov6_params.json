@@ -1,0 +1,30 @@
+{	
+	"detPreParams":
+	{
+		"imgRoot":"./imgs",
+		"calibrationDataRoot":"./calibration_data",
+		"isFixResize":1, 
+		"batchSize":12, 
+		"netInputChannels":3, 
+		"netInputHeight":640, 
+		"netInputWidth":640, 
+		"isBGR2RGB":1, 
+		"means":[0, 0, 0], 
+		"scales":[0.00392157, 0.00392157, 0.00392157]
+	},
+
+	"onnxPath":"models/yolov6n.onnx",
+	"outputRootDir":"quant_test/",
+	"inputShape":"\"images:12,3,640,640\"",
+	"socVersion":"Ascend310P3",
+	"insertOpConf":"./models/model_aipp.cfg",
+
+	"quantInt8":
+	{
+		"calBatchSize":16
+	},
+	"quantFp16":
+	{
+
+	}	
+}

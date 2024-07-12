@@ -6,34 +6,36 @@ def main(json_path):
     with open(json_path, "r") as fpR:
         quamt_all_params = json.load(fpR)
         
-        onnx_path = quamt_all_params["onnx_path"]
-        input_shape = quamt_all_params["input_shape"]
-        soc_version = quamt_all_params["soc_version"]
-        insert_op_conf = quamt_all_params["insert_op_conf"]
+        onnx_path = quamt_all_params["onnxPath"]
+        output_root_dir = quamt_all_params["outputRootDir"]
+        input_shape = quamt_all_params["inputShape"]
+        soc_version = quamt_all_params["socVersion"]
+        insert_op_conf = quamt_all_params["insertOpConf"]
         
         # For int8 model
-        if "det_pre_params" in quamt_all_params and "quant_int8" in quamt_all_params:
+        if "detPreParams" in quamt_all_params and "quantInt8" in quamt_all_params:
             # 1. Generate quant data
             os.system("quant_data_preprocess %s"%(json_path))
             
             # 2. Quant
-            quant_int8_params = quamt_all_params["quant_int8"]
+            quant_int8_params = quamt_all_params["quantInt8"]
             
-            img_root = quamt_all_params["det_pre_params"]["img_root"]
-            batch_size = quamt_all_params["det_pre_params"]["batch_size"]
+            img_root = quamt_all_params["detPreParams"]["imgRoot"]
+            calibration_data_root = quamt_all_params["detPreParams"]["calibrationDataRoot"]
+            batch_size = quamt_all_params["detPreParams"]["batchSize"]
 
-            calibration_data_path = "data/calibration/%s_batch%d"%(os.path.basename(img_root), batch_size)
+            calibration_data_path = "%s/batch%d"%(calibration_data_root, batch_size)
             save_model_name_prefix = os.path.basename(onnx_path).replace(".onnx","_int8")
-            cali_batch_size = quant_int8_params["cali_batch_size"]
+            cali_batch_size = quant_int8_params["calBatchSize"]
             
-            os.system("amct_onnx_act %s %s %s %s %d %s %s"%(
-                onnx_path, input_shape, calibration_data_path, save_model_name_prefix, cali_batch_size, soc_version, insert_op_conf))
+            os.system("amct_onnx_act %s %s %s %s %d %s %s %s"%(
+                onnx_path, input_shape, calibration_data_path, save_model_name_prefix, cali_batch_size, soc_version, insert_op_conf, output_root_dir))
                     
-        if "quant_fp16" in quamt_all_params:
+        if "quantFp16" in quamt_all_params or ("quantFp16" not in quamt_all_params and "quantInt8" not in quamt_all_params):
             save_model_name_prefix = os.path.basename(onnx_path).replace(".onnx","_fp16")
             
-            os.system("act_onnx %s %s %s %s %s"%(
-                onnx_path, input_shape, save_model_name_prefix, soc_version, insert_op_conf))
+            os.system("act_onnx %s %s %s %s %s %s"%(
+                onnx_path, input_shape, save_model_name_prefix, soc_version, insert_op_conf, output_root_dir))
 
 
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ import sys
 import numpy as np
 import cv2 
 
-BIN_ROOT_PATH = "./data/calibration"
 VALID_IMG_NUM = 3072
 
 def letterbox(im, new_shape=(640, 640), color=(0, 0, 0)):
@@ -110,17 +109,21 @@ def main():
     with open(json_path,"r") as fpR:
         params_dict_all = json.load(fpR)
     
-    params_dict = params_dict_all["det_pre_params"]
+    params_dict = params_dict_all["detPreParams"]
 
-    img_root = params_dict["img_root"]
-    fixed_scale = params_dict["fixed_scale"]
-    batch_size = params_dict["batch_size"]
-    des_channels = params_dict["des_channels"]
-    des_height = params_dict["des_height"]
-    des_width = params_dict["des_width"]
-    is_BGR2RGB = params_dict["is_BGR2RGB"]
+    img_root = params_dict["imgRoot"]
+    calibration_data_root = params_dict["calibrationDataRoot"]
+    fixed_scale = params_dict["isFixResize"]
+    batch_size = params_dict["batchSize"]
+    des_channels = params_dict["netInputChannels"]
+    des_height = params_dict["netInputHeight"]
+    des_width = params_dict["netInputWidth"]
+    is_BGR2RGB = params_dict["isBGR2RGB"]
     means = params_dict["means"]
-    stds = params_dict["stds"]
+    scales = params_dict["scales"]
+    stds = []
+    for item in scales:
+        stds.append(1.0 / item)
     
     image_paths = []
     tmps = os.listdir(img_root)
@@ -130,7 +133,7 @@ def main():
     valid_img_num = min(VALID_IMG_NUM, len(image_paths))
     input_array = prepare_image_input(image_paths[:valid_img_num], fixed_scale, des_channels, des_height, des_width, is_BGR2RGB, means, stds)
 
-    bin_save_path = os.path.join(BIN_ROOT_PATH, os.path.basename(os.path.dirname(image_paths[0])) + "_batch%d"%(batch_size))
+    bin_save_path = os.path.join(calibration_data_root, "batch%d"%(batch_size))
     if not os.path.exists(bin_save_path):
         os.makedirs(bin_save_path)
 
