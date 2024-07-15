@@ -150,3 +150,21 @@ atc --model=./quant_test/output_Ascend310P3/yolov6n_int8_deploy_model.onnx --fra
 ```shell
 atc --model=./models/yolov6n.onnx --framework=5 --output=./quant_test/output_Ascend310P3/yolov6n_fp16_deploy_model_inc_pre_ --input_shape="images:1,3,640,640" --soc_version=Ascend310P3 --output_type=FP32 --insert_op_conf=./models/model_aipp.cfg
 ```
+
+### 简化过程
+
+下面将上述过程打包成一个`docker`镜像，可直接使用，具体如下所示：
+
+- 下载docker镜像[ubuntu2204_cann7_amct_x86_64](https://pan.baidu.com/s/1GAcnyMC3qLkouvh_K0BYwg?pwd=yhq0)，然后加载
+
+```shell
+docker load -i ubuntu2204_cann7_amct.tar
+```
+
+- 运行如下命令
+
+```shell
+>>which quant_all_script 
+>>/usr/local/Ascend/jnulzl/bin/quant_all_script
+>>quant_all_script models/yolov6_params.json
+```
